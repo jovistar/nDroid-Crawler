@@ -47,6 +47,11 @@ def ncd_loop(debugMode, logMode, botInterval, dlThreadNum, noSpider):
 	curTime = datetime.now()
 	startTime = curTime.strftime('%Y-%m-%d %H:%M:%S')
 
+	if not os.path.exists('apk'):
+		os.mkdir('apk')
+	if not os.path.exists('tmp'):
+		os.mkdir('tmp')
+
 	logger = Logger(logMode)
 	logger.logger('Initiating')
 	os.system('rm -f tmp/*')
