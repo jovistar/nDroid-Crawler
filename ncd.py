@@ -52,7 +52,7 @@ def ncd_loop(debugMode, logMode, botInterval, dlThreadNum, noSpider):
 	if not os.path.exists('tmp'):
 		os.mkdir('tmp')
 
-	logger = Logger(logMode)
+	logger = Logger(12322)
 	logger.logger('Initiating')
 	os.system('rm -f tmp/*')
 
