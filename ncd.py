@@ -52,7 +52,7 @@ def ncd_loop(debugMode, logMode, botInterval, dlThreadNum, noSpider):
 	if not os.path.exists('tmp'):
 		os.mkdir('tmp')
 
-	logger = Logger(12322)
+	logger = Logger('nDroid-Crawler', '127.0.0.1', 12322)
 	logger.logger('Initiating')
 	os.system('rm -f tmp/*')
 
