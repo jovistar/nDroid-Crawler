@@ -1,5 +1,0 @@
-[db]
-db_host=d.jovistar.info
-db_user=root
-db_pass=mysqlpw
-db_name=ndroidas

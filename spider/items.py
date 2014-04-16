@@ -8,5 +8,5 @@ from scrapy.item import Item, Field
 class TestItem(Item):
     # define the fields for your item here like:
     # name = Field()
-	store = Field()
+	market = Field()
 	url = Field()

@@ -7,15 +7,16 @@ from logger import Logger
 from rpcmonitor import RpcMonitor
 
 class Receiver(threading.Thread):
-	def __init__(self, logger, rpcMonitor, rpQueue, name):
+	def __init__(self, logger, rpcMonitor, rpQueue, port, name):
 		super(Receiver, self).__init__()
 		self.logger = logger
 		self.rpcMonitor = rpcMonitor
 		self.rpQueue = rpQueue
+		self.port = port
 		self.name = name
 
 	def run(self):
-		address = ('', 7030)
+		address = ('', self.port)
 		udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		udpSocket.bind(address)
 

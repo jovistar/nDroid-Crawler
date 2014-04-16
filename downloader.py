@@ -8,6 +8,7 @@ import time
 import os
 from logger import Logger
 from rpcmonitor import RpcMonitor
+import ndutil
 
 class DownloadThread(threading.Thread):
 	def __init__(self, args, name):
@@ -56,7 +57,7 @@ class DownloadThread(threading.Thread):
 		curlHandle.setopt(pycurl.URL, data)
 
 		try:
-			self.logger.logger('Downloading [%s]' % data)
+			self.logger.logger('Downloading %s' % data)
 			curlHandle.perform()
 			file.close()
 
@@ -74,11 +75,10 @@ class Downloader(threading.Thread):
 		self.dpQueue = args[3]
 		self.pdLock = args[4]
 		self.dlThreadNum = args[5]
+		self.dirWorking = args[6]
 		self.name = name
 
 	def run(self):
-		m = hashlib.md5()
-
 		numThreads = self.dlThreadNum
 
 		ddLock = threading.Lock()
@@ -99,8 +99,7 @@ class Downloader(threading.Thread):
 			data = self.pdQueue.get(1)
 
 			#generate name
-			m.update(data)
-			fileName = 'tmp/%s.apk' % m.hexdigest()
+			fileName = '%s/%s.apk' % (self.dirWorking, ndutil.getMd5ByStr(data))
 
 			#select thread
 			minQueueIdx = 0

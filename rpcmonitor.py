@@ -6,10 +6,12 @@ from logger import Logger
 
 
 class RpcMonitor(threading.Thread):
-	def __init__(self, logger, name):
+	def __init__(self, logger, port, auth, name):
 		super(RpcMonitor, self).__init__()
 		self.logger = logger
 		self.name = name
+		self.port = port
+		self.auth = auth
 
 		self.botTotal = 0
 		self.bots = []
@@ -21,14 +23,13 @@ class RpcMonitor(threading.Thread):
 		self.downloadingTotal = 0
 
 	def run(self):
-		address = ('', 7029)
+		address = ('', self.port)
 		udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		udpSocket.bind(address)
 
 		while True:
-			initData = 'f84fne8'
 			data, addr = udpSocket.recvfrom(1024)
-			if data != 'feu547fn':
+			if data != self.auth:
 				self.logger.logger('Unauthorized RPC Request')
 				continue
 

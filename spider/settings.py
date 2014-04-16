@@ -6,13 +6,13 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #
 
-BOT_NAME = 'dov'
+BOT_NAME = 'spider'
 
-SPIDER_MODULES = ['dov.spiders']
-NEWSPIDER_MODULE = 'dov.spiders'
+SPIDER_MODULES = ['spider.spiders']
+NEWSPIDER_MODULE = 'spider.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'test (+http://www.yourdomain.com)'
 ITEM_PIPELINES = [
-		'dov.pipelines.AppPipeLine'
+		'spider.pipelines.AppPipeLine'
 		]

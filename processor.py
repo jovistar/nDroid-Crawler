@@ -1,32 +1,29 @@
 #!/usr/bin/python
 
 import threading
-import MySQLdb
 from Queue import Queue
 import hashlib
 import os
 import shutil
 from logger import Logger
-import dbmanager
 from rpcmonitor import RpcMonitor
+from dbmanager import DbManager
 import ndutil
-from ndecom import NdeCom
 
 class Processor(threading.Thread):
-	def __init__(self, logger, rpcMonitor, dpQueue, pdLock, pdQueue, name):
+	def __init__(self, logger, rpcMonitor, dpQueue, pdLock, pdQueue, dbManager, dirWorking, dirStore, name):
 		super(Processor, self).__init__()
 		self.logger = logger
 		self.rpcMonitor = rpcMonitor
 		self.dpQueue = dpQueue
 		self.pdLock = pdLock
 		self.pdQueue = pdQueue
+		self.dbManager = dbManager
+		self.dirWorking = dirWorking
+		self.dirStore = dirStore
 		self.name = name
-		self.ndeCom = NdeCom('127.0.0.1', 12325)
 
 	def run(self):
-		dbCon = dbmanager.open_db_con()
-		dbCur = dbCon.cursor()
-
 		self.rpcMonitor.setDownloadedTotal(0)
 		self.rpcMonitor.setDuplicatedTotal(0)
 		while True:
@@ -34,7 +31,7 @@ class Processor(threading.Thread):
 			self.rpcMonitor.decPdQueueSize()
 
 			#filte 0KB file
-			if os.path.getsize(fileName) == 0:
+			if ndutil.getSize(fileName) == 0:
 				self.pdLock.acquire()
 				self.pdQueue.put(data, 1)
 				self.rpcMonitor.incPdQueueSize()
@@ -42,33 +39,18 @@ class Processor(threading.Thread):
 				continue
 
 			#duplicate?
-			m = hashlib.md5()
-			fileHandle = open(fileName, 'rb')
-			m.update(fileHandle.read())
-			md5Value = m.hexdigest()
-			fileHandle.close()
+			md5Value = ndutil.getMd5(fileName)
 
-			count = dbCur.execute('select aid,path from crawler where hashvalue=%s', [md5Value])
-			if count:
-				aid, path = dbCur.fetchone()
-				value = [1, path, md5Value, data]
-				dbCur.execute('update crawler set downloaded=%s,path=%s,hashvalue=%s where url=%s', value)
-				dbCon.commit()
+			path = self.dbManager.get_path_by_hashval(md5Value)
+			if path is not None:
+				self.dbManager.update_item(data, 'NULL', path, md5Value, 1)
 				self.rpcMonitor.incDuplicatedTotal()
-				self.logger.logger('Duplicated [%s]' % path)
+				self.logger.logger('Duplicated %s' % path)
 				os.remove(fileName)
 				continue
 
-			newFileName = 'apk/%s.apk' % md5Value
+			newFileName = '%s/%s.apk' % (self.dirStore, md5Value)
 			shutil.move(fileName, newFileName)
-			value = [1, newFileName, md5Value, data]
-			dbCur.execute('update crawler set downloaded=%s,path=%s,hashvalue=%s where url=%s', value)
-			dbCon.commit()
+			self.dbManager.update_item(data, 'NULL', newFileName, md5Value, 1)
 			self.rpcMonitor.incDownloadedTotal()
-			self.logger.logger('Downloaded [%s]' % data)
-
-			path = ndutil.getAbstractPath(newFileName)
-			self.ndeCom.create(path)
-
-		dbCur.close()
-		dbCon.close()
+			self.logger.logger('Downloaded %s' % data)

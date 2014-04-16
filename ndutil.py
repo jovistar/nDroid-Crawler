@@ -17,6 +17,11 @@ def getMd5(path):
 
 	return value
 
+def getMd5ByStr(val):
+	m = hashlib.md5()
+	m.update(val)
+	return m.hexdigest()
+
 def getSize(path):
 	return os.path.getsize(path)
 
@@ -24,7 +29,7 @@ def setTimezone():
 	os.environ['TZ'] = 'Asia/Shanghai'
 	time.tzset()
 
-def getCreated():
+def getCurrentTimeStr():
 	curTime = datetime.now()
 	return curTime.strftime('%Y-%m-%d %H:%M:%S')
 

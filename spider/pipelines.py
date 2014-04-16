@@ -16,14 +16,14 @@ class AppPipeLine(object):
 		dispatcher.connect(self.finalize, signals.engine_stopped)
 		
 	def process_item(self, item, spider):
-		data = item['store'] + ',' + item['url']
+		data = item['market'] + ',' + item['url']
 		self.udpSocket.sendto(data, self.serverAddr)
 		return item
 
 	def initialize(self):
 		self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		log.msg("App PipeLine Opened!!!", log.DEBUG)
+		log.msg("App PipeLine Opened!", log.DEBUG)
 
 	def finalize(self):
 		self.udpSocket.close()
-		log.msg("App PipeLine Closed!!!", log.DEBUG)
+		log.msg("App PipeLine Closed!", log.DEBUG)
