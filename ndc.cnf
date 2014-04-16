@@ -20,7 +20,11 @@ host=127.0.0.1
 port=12322
 
 [spiders]
-spiders=gfan_spider
+spiders=sogou_spider
+
+[sogou_spider]
+startPage=1
+stopPage=2
 
 [gfan_spider]
 startPage=1
