@@ -9,6 +9,8 @@ import shutil
 from logger import Logger
 import dbmanager
 from rpcmonitor import RpcMonitor
+import ndutil
+from ndecom import NdeCom
 
 class Processor(threading.Thread):
 	def __init__(self, logger, rpcMonitor, dpQueue, pdLock, pdQueue, name):
@@ -19,6 +21,7 @@ class Processor(threading.Thread):
 		self.pdLock = pdLock
 		self.pdQueue = pdQueue
 		self.name = name
+		self.ndeCom = NdeCom('127.0.0.1', 12325)
 
 	def run(self):
 		dbCon = dbmanager.open_db_con()
@@ -63,6 +66,9 @@ class Processor(threading.Thread):
 			dbCon.commit()
 			self.rpcMonitor.incDownloadedTotal()
 			self.logger.logger('Downloaded [%s]' % data)
+
+			path = ndutil.getAbstractPath(newFileName)
+			self.ndeCom.create(path)
 
 		dbCur.close()
 		dbCon.close()

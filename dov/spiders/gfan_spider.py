@@ -9,7 +9,7 @@ class GfanSpider(BaseSpider):
 
 	#cal
 	start_page = 1
-	stop_page = ( 1 + 1 )
+	stop_page = ( 1 + 10 )
 	start_urls = []
 	while start_page != stop_page:
 		start_urls.append( "http://apk.gfan.com/apps_7_1_%d.html" % start_page )
