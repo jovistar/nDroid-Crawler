@@ -7,14 +7,14 @@ class GfanSpider(BaseSpider):
 	name = "gfan_spider"
 	allowed_domains = ["apk.gfan.com"]
 
-	#cal
-	start_page = 1
-	stop_page = 2
-	start_urls = []
-	while start_page != stop_page:
-		start_urls.append( "http://apk.gfan.com/apps_7_1_%d.html" % start_page )
-		start_page = start_page + 1
-
+	def __init__(self, start=None, stop=None, *args, **kwargs):
+		super(GfanSpider, self).__init__(*args, **kwargs)
+		self.start_urls = []
+		startPage = int(start)
+		stopPage = int(stop)
+		while startPage != stopPage:
+			self.start_urls.append( "http://apk.gfan.com/apps_7_1_%d.html" % startPage)
+			startPage = startPage + 1
 
 	def parse(self,response):
 		sel = Selector(response)

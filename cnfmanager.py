@@ -25,10 +25,11 @@ class CnfManager():
 		self.cnfData['ndlComPort'] = int(cf.get('ndlcom', 'port'))
 
 		self.cnfData['spiders'] = cf.get('spiders', 'spiders').split(',')
+		self.cnfData['spiderCnfs'] = {}
 		for spider in self.cnfData['spiders']:
-			self.cnfData[spider] = {}
-			self.cnfData[spider]['startPage'] = int(cf.get(spider, 'startPage'))
-			self.cnfData[spider]['stopPage'] = int(cf.get(spider, 'stopPage'))
+			self.cnfData['spiderCnfs'][spider] = {}
+			self.cnfData['spiderCnfs'][spider]['startPage'] = int(cf.get(spider, 'startPage'))
+			self.cnfData['spiderCnfs'][spider]['stopPage'] = int(cf.get(spider, 'stopPage'))
 
 	def getCnfData(self):
 		return self.cnfData

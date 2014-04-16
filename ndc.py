@@ -5,7 +5,6 @@ from receiver import Receiver
 from preprocessor import PreProcessor
 from downloader import Downloader
 from processor import Processor
-from spidergenerator import SpiderGenerator
 from dbmanager import DbManager
 from logger import Logger
 from rpcmonitor import RpcMonitor
@@ -44,10 +43,10 @@ def ncd_loop(doInit, dlThreadNum):
 		os.system('rm -f %s/*' % cnfData['dirWorking'])
 		os.system('rm -f %s/*' % cnfData['dirStore'])
 
-	logger.logger('Customizing Spiders')
-	spiderGenerator = SpiderGenerator('template', 'spider/spiders')
-	for spider in cnfData['spiders']:
-		spiderGenerator.gen_spider(spider, cnfData[spider]['startPage'], cnfData[spider]['stopPage'])
+	#logger.logger('Customizing Spiders')
+	#spiderGenerator = SpiderGenerator('template', 'spider/spiders')
+	#for spider in cnfData['spiders']:
+	#	spiderGenerator.gen_spider(spider, cnfData[spider]['startPage'], cnfData[spider]['stopPage'])
 
 	rpQueue = Queue()
 	pdQueue = Queue()
@@ -59,7 +58,7 @@ def ncd_loop(doInit, dlThreadNum):
 	rpcMonitor.setDownloadTotal(pdQueue.qsize())
 	rpcMonitor.setPdQueueSize(pdQueue.qsize())
 	
-	botScheduler = BotScheduler(logger, rpcMonitor, 'BotScheduler')
+	botScheduler = BotScheduler(logger, rpcMonitor, cnfData['spiders'], cnfData['spiderCnfs'], 'BotScheduler')
 	receiver = Receiver(logger, rpcMonitor, rpQueue, cnfData['receiverPort'], 'Receiver')
 	preProcessor = PreProcessor(logger, rpcMonitor, rpQueue, pdQueue, pdLock, dbManager, 'PreProcessor')
 	downloader = Downloader([logger, rpcMonitor, pdQueue, dpQueue, pdLock, dlThreadNum, cnfData['dirWorking']], 'Downloader')
