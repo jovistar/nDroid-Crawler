@@ -12,6 +12,10 @@ class GfanSpider(BaseSpider):
 		self.start_urls = []
 		startPage = int(start)
 		stopPage = int(stop)
+
+		if startPage > stopPage:
+			startPage = stopPage
+
 		while startPage != stopPage:
 			self.start_urls.append( "http://apk.gfan.com/apps_7_1_%d.html" % startPage)
 			startPage = startPage + 1

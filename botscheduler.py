@@ -36,9 +36,9 @@ class BotScheduler(threading.Thread):
 	def run(self):
 		while True:
 			for spider in self.spiderIns:
-				time.sleep(10)
+				time.sleep(60)
 				self.logger.logger('Starting [%s]' % spider)
-				os.system('scrapy crawl %s -a start=%d -a stop=%d' % ( spider, self.spiderCnfs[spider]['startPage'], self.spiderCnfs[spider]['stopPage']))
-				#os.system('scrapy crawl %s -a start=%d -a stop=%d > /dev/null 2>&1' % ( spider, self.spiderCnfs[spider]['startPage'], self.spiderCnfs[spider]['stopPage']))
+				#os.system('scrapy crawl %s -a start=%d -a stop=%d' % ( spider, self.spiderCnfs[spider]['startPage'], self.spiderCnfs[spider]['stopPage']))
+				os.system('scrapy crawl %s -a start=%d -a stop=%d > /dev/null 2>&1' % ( spider, self.spiderCnfs[spider]['startPage'], self.spiderCnfs[spider]['stopPage']))
 
 			time.sleep(60*60*24*30)

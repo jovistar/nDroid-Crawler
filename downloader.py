@@ -47,7 +47,7 @@ class DownloadThread(threading.Thread):
 			self.dpQueue.put([data, fileName], 1)
 			self.ddLock.release()
 
-			time.sleep(10)
+			time.sleep(30)
 
 		curlHandle.close()
 		
