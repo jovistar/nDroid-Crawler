@@ -49,7 +49,7 @@ class DbManager():
 
 	def get_path_by_hashval(self, hashVal):
 		self.lock.acquire()
-		count = self.dbCursor.execute('SELECT path FROM crawler WHERE hashval=%s AND download=1', (hashVal))
+		count = self.dbCursor.execute('SELECT path FROM crawler WHERE hashval=%s AND download=1', (hashVal,))
 		if count:
 			result = self.dbCursor.fetchone()
 			self.lock.release()
