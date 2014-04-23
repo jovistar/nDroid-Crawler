@@ -28,8 +28,7 @@ class CnfManager():
 		self.cnfData['spiderCnfs'] = {}
 		for spider in self.cnfData['spiders']:
 			self.cnfData['spiderCnfs'][spider] = {}
-			self.cnfData['spiderCnfs'][spider]['startPage'] = int(cf.get(spider, 'startPage'))
-			self.cnfData['spiderCnfs'][spider]['stopPage'] = int(cf.get(spider, 'stopPage'))
+			self.cnfData['spiderCnfs'][spider]['pnpc'] = int(cf.get(spider, 'pnpc'))
 
 	def getCnfData(self):
 		return self.cnfData

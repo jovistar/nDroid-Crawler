@@ -34,11 +34,23 @@ class BotScheduler(threading.Thread):
 		self.rpcMonitor.setBots(self.spiderIns)
 
 	def run(self):
+		cnfs = {}
+		for spider in self.spiderIns:
+			cnfs[spider] = {}
+			cnfs[spider]['start'] = 1
+			cnfs[spider]['stop'] = 1 + self.spiderCnfs[spider]['pnpc']
+
+		#wait for all coms
+		time.sleep(15)
 		while True:
 			for spider in self.spiderIns:
-				time.sleep(60)
-				self.logger.logger('Starting [%s]' % spider)
-				#os.system('scrapy crawl %s -a start=%d -a stop=%d' % ( spider, self.spiderCnfs[spider]['startPage'], self.spiderCnfs[spider]['stopPage']))
-				os.system('scrapy crawl %s -a start=%d -a stop=%d > /dev/null 2>&1' % ( spider, self.spiderCnfs[spider]['startPage'], self.spiderCnfs[spider]['stopPage']))
+				if cnfs[spider]['start'] == cnfs[spider]['stop']:
+					time.sleep(150)
+					continue
+				self.logger.logger('Starting %s' % spider)
+				os.system('scrapy crawl %s -a start=%d -a stop=%d' % ( spider, cnfs[spider]['start'], cnfs[spider]['start'] + 1))
+				#os.system('scrapy crawl %s -a start=%d -a stop=%d > /dev/null 2>&1' % ( spider, cnfs[spider]['start'], cnfs[spider]['start'] + 1))
+				cnfs[spider]['start'] = cnfs[spider]['start'] + 1
+				time.sleep(150)
 
-			time.sleep(60*60*24*30)
+		time.sleep(60*60*24*30)

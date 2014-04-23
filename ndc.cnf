@@ -20,16 +20,16 @@ host=127.0.0.1
 port=12322
 
 [spiders]
-spiders=appchina_spider
+spiders=anzhi_spider
+
+[anzhi_spider]
+pnpc=1
 
 [appchina_spider]
-startPage=1
-stopPage=2
+pnpc=1
 
 [sogou_spider]
-startPage=1
-stopPage=10
+pnpc=1
 
 [gfan_spider]
-startPage=1
-stopPage=10
+pnpc=1
