@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 import threading
-from Queue import Queue
 import pycurl
 import hashlib
+from Queue import Queue
+from Queue import Empty
 import time
 import os
+import socket
 from logger import Logger
 from rpcmonitor import RpcMonitor
 import ndutil
@@ -32,6 +34,7 @@ class DownloadThread(threading.Thread):
 		while True:
 			data, fileName = self.ddQueue.get(1)
 
+			self.rpcMonitor.decPdQueueSize()
 			self.rpcMonitor.incDownloadingTotal()
 			result = self.download(curlHandle, data, fileName)
 			self.rpcMonitor.decDownloadingTotal()
@@ -41,7 +44,7 @@ class DownloadThread(threading.Thread):
 				self.pdQueue.put(data, 1)
 				self.rpcMonitor.incPdQueueSize()
 				self.pdLock.release()
-				time.sleep(10)
+				time.sleep(30)
 				continue
 			self.ddLock.acquire()
 			self.dpQueue.put([data, fileName], 1)
@@ -78,6 +81,9 @@ class Downloader(threading.Thread):
 		self.dirWorking = args[6]
 		self.name = name
 
+		self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		self.addr = ('127.0.0.1', 7031)
+
 	def run(self):
 		numThreads = self.dlThreadNum
 
@@ -96,20 +102,29 @@ class Downloader(threading.Thread):
 			downloadThreads[i].start()
 
 		while True:
-			data = self.pdQueue.get(1)
+			try:
+				data = self.pdQueue.get(True, 10)
+				#generate name
+				fileName = '%s/%s.apk' % (self.dirWorking, ndutil.getMd5ByStr(data))
 
-			#generate name
-			fileName = '%s/%s.apk' % (self.dirWorking, ndutil.getMd5ByStr(data))
+				#select thread
+				minQueueIdx = 0
+				minQueueSize = ddQueues[0].qsize()
+				for i in range(1, numThreads):
+					if ddQueues[i].qsize() < minQueueSize:
+						minQueueIdx = i
+						minQueueSize = ddQueues[i].qsize()
 
-			#select thread
-			minQueueIdx = 0
-			minQueueSize = ddQueues[minQueueIdx].qsize()
-			for i in range(minQueueIdx + 1, numThreads):
-				if ddQueues[i].qsize() < minQueueSize:
-					minQueueIdx = i
-					minQueueSize = ddQueues[i].qsize()
+				ddQueues[minQueueIdx].put([data, fileName], 1)
 
-			ddQueues[minQueueIdx].put([data, fileName], 1)
+			except Empty:
+				freeThreadNum = 0
+				for i in range(0, numThreads):
+					if ddQueues[i].empty() == True:
+						freeThreadNum = freeThreadNum + 1
+
+				if ( float(freeThreadNum) / float(numThreads) ) >= float(0.5):
+					self.udpSocket.sendto('empty', self.addr)
 
 		for i in range(numThreads):
 			downloadThreads[i].join()

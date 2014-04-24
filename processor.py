@@ -28,7 +28,6 @@ class Processor(threading.Thread):
 		self.rpcMonitor.setDuplicatedTotal(0)
 		while True:
 			data, fileName = self.dpQueue.get(1)
-			self.rpcMonitor.decPdQueueSize()
 
 			#filte 0KB file
 			if ndutil.getSize(fileName) == 0:

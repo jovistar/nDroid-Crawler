@@ -20,10 +20,10 @@ host=127.0.0.1
 port=12322
 
 [spiders]
-spiders=anzhi_spider
+spiders=gfan_spider
 
 [anzhi_spider]
-pnpc=1
+pnpc=3
 
 [appchina_spider]
 pnpc=1
@@ -32,4 +32,4 @@ pnpc=1
 pnpc=1
 
 [gfan_spider]
-pnpc=1
+pnpc=10

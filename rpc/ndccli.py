@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 
 import socket
 import getopt
@@ -9,7 +9,7 @@ def run_rpc(serverAddr, serverPort, refreshInt):
 	address = (serverAddr, serverPort)
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-	authCode = 'feu547fn'
+	authCode = 'fu84nf93'
 	sep = '|'
 	while True:
 		s.sendto(authCode, address)
